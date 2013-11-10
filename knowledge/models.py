@@ -83,10 +83,13 @@ class KnowledgeBase(models.Model):
         Get local name, then self.user's first/last, and finally
         their username if all else fails.
         """
-        name = (self.name or (self.user and (
-            u'{0} {1}'.format(self.user.first_name, self.user.last_name).strip()\
-            or self.user.username or self.user.email.split('@')[0]
-        )))
+        try:
+            name = (self.name or (self.user and (
+                u'{0} {1}'.format(self.user.first_name, self.user.last_name).strip()\
+                or self.user.username
+            )))
+        except:
+            name = self.user.email.split('@')[0]
         return name.strip() or _("Anonymous")
 
     get_email = lambda s: s.email or (s.user and s.user.email)
