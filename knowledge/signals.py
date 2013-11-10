@@ -1,6 +1,6 @@
 from knowledge.utils import get_module
 from knowledge import settings
-
+from django.contrib.auth import get_user_model
 
 def send_alerts(target_dict, response=None, question=None, **kwargs):
     """
@@ -48,7 +48,6 @@ def knowledge_post_save(sender, instance, created, **kwargs):
     and shuttles them to the predefined module.
     """
     from knowledge.models import Question, Response
-    from django.contrib.auth.models import User
 
     func = get_module(settings.ALERTS_FUNCTION_PATH)
 
@@ -64,7 +63,7 @@ def knowledge_post_save(sender, instance, created, **kwargs):
                             for i in instances if i.alert])
 
         elif isinstance(instance, Question):
-            staffers = User.objects.filter(is_staff=True)
+            staffers = get_user_model().objects.filter(is_staff=True)
             out_dict = dict([[user.email, user] for user in staffers
                                 if user.has_perm('change_question')])
 
